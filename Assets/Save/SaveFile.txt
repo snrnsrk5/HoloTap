@@ -1,0 +1,19 @@
+﻿{
+    "userName": "잉",
+    "energy": 292,
+    "ePc": 1,
+    "soldiersList": [
+        {
+            "soldierName": "진흙",
+            "amount": 5,
+            "ePs": 1,
+            "price": 150
+        },
+        {
+            "soldierName": "바위",
+            "amount": 0,
+            "ePs": 2,
+            "price": 1200
+        }
+    ]
+}
