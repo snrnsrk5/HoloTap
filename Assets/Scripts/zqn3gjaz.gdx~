@@ -1,0 +1,74 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class MusicManger : MonoBehaviour
+{
+    public AudioSource[] musicList = null;
+    int i = 0;
+    bool userFalse = false;
+    private void Awake()
+    {
+        OnPlay();
+    }
+    private void Update()
+    {
+        Debug.Log(i);
+        if (musicList[i].isPlaying == false & userFalse == false)
+        {
+            i++;
+        }
+    }
+    private void OnPlay()
+    {
+        userFalse = false;
+        musicList[i].Play();
+    }
+    public void Play()
+    {
+        if (userFalse == true)
+        {
+            userFalse = false;
+            musicList[i].Play();
+        }
+    }
+    public void Pause()
+    {
+        userFalse = true;
+        musicList[i].Pause();
+    }
+    public void stop()
+    {
+        userFalse = true;
+        musicList[i].Stop();
+        musicList[i].Play();
+    }
+    public void next()
+    {
+        userFalse = true;
+        musicList[i].Stop();
+        if (i == 6)
+        {
+            i = 0;
+        }
+        else
+        {
+            i++;
+        }
+        musicList[i].Play();
+    }
+    public void Previous()
+    {
+        userFalse = true;
+        musicList[i].Stop();
+        if (i == 0)
+        {
+            i = 6;
+        }
+        else
+        {
+            i--;
+        }
+        musicList[i].Play();
+    }
+}

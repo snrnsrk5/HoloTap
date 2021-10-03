@@ -1,0 +1,71 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class UIManager : MonoBehaviour
+{
+    [SerializeField]
+    private Text energyText = null;
+    [SerializeField]
+    private Animator beakerAnimator = null;
+    [SerializeField]
+    private GameObject upgradePanelTemplate = null;
+    [SerializeField]
+    private EnergyText energyTextTemplate = null;
+    [SerializeField]
+    private Transform pool = null;
+
+    private List<UpgradePanel> upgradePanels = new List<UpgradePanel>();
+
+    private void Start()
+    {
+        UpdateEnergyPanel();
+        CreatePanels();
+    }
+
+    private void CreatePanels()
+    {
+        GameObject newPanel = null;
+        UpgradePanel newPanelComponent = null;
+        Aaa(GameManager.Instance.CurrentUser.soldiersList, upgradePanelTemplate);
+        Aaa(GameManager.Instance.CurrentUser.soldiersList2, upgradePanelTemplate);
+    }
+    private void Aaa(List<Soldier> list, GameObject panel)
+    {
+        GameObject newPanel = null;
+        UpgradePanel newPanelComponent = null;
+        foreach (Soldier soldier in list)
+        {
+            newPanel = Instantiate(panel, panel.transform.parent);
+            newPanelComponent = newPanel.GetComponent<UpgradePanel>();
+            newPanelComponent.SetValue(soldier);
+            newPanel.SetActive(true);
+            upgradePanels.Add(newPanelComponent);
+        }
+    }
+
+    public void OncliCkBeaker()
+    {
+        GameManager.Instance.CurrentUser.energy += GameManager.Instance.CurrentUser.ePc;
+        UpdateEnergyPanel();
+        beakerAnimator.Play("Click");
+
+        EnergyText newText = null;
+
+        if(pool.childCount > 0) 
+        {
+            newText = pool.GetChild(0).GetComponent<EnergyText>();
+        }
+        else
+        {
+            newText = Instantiate(energyTextTemplate, energyTextTemplate.transform.parent);
+        }
+
+        newText.Show(Input.mousePosition);
+    }
+
+    public void UpdateEnergyPanel()
+    {
+        energyText.text = string.Format("$ {0}", GameManager.Instance.CurrentUser.energy);
+    }
+}

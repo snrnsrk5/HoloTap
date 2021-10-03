@@ -1,0 +1,134 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+public class UpgradePanel : MonoBehaviour
+{
+
+    [SerializeField]
+    private Text soldierNameText = null;
+    [SerializeField]
+    private Text priceText = null;
+    [SerializeField]
+    private Text amountText = null;
+    [SerializeField]
+    private Button purchaseButton = null; //금액이 안맞을때 작동안될려고
+    [SerializeField]
+    private Image soldierImage = null;
+    [SerializeField]
+    private Sprite[] soldierSprite;
+    int numlist = 2;
+    [SerializeField]
+    private MusicManger musicManger = null;
+    [SerializeField] private bool isText;
+
+    private Soldier soldier = null;
+    public void SetValue(Soldier soldier) //솔져는 컴포넌트가 아닌 클래스 컴포넌트는 MonoBehavior를 상속받아야만 그거다.
+    {
+
+        this.soldier = soldier; //이거
+        UpdateUI();
+        PBD();
+    }
+
+        public void UpdateUI()
+    {
+        soldierNameText.text = soldier.soldierName;
+        priceText.text = string.Format("$ {0}", soldier.price);
+        amountText.text = string.Format("LV {0}", soldier.amount); //개수
+        soldierImage.sprite = soldierSprite[soldier.soldierNumber];
+    }
+
+    public void OnClickPurchase()
+    {
+        
+        if (GameManager.Instance.CurrentUser.energy < soldier.price)  //현재에너지
+        {
+            return;
+        }
+        
+        GameManager.Instance.CurrentUser.energy -= soldier.price;
+        soldier.price = (long)(soldier.price * 1.25f);
+        soldier.amount++;
+        UpdateUI();
+        GameManager.Instance.UI.UpdateEnergyPanel();
+    }
+    public void OnClickPurchaseEPC()//클릭당 돈 을 soldier 의 EPS 만큼 올림
+    {
+        if (GameManager.Instance.CurrentUser.energy < soldier.price)  //현재에너지
+        {
+            return;
+        }
+        GameManager.Instance.CurrentUser.energy -= soldier.price;
+        if(soldier.isepcUp)
+        {
+        GameManager.Instance.CurrentUser.ePc += soldier.ePs;
+        }
+        soldier.price = (long)(soldier.price * 1.25f);
+        soldier.amount++;
+        UpdateUI();
+        GameManager.Instance.UI.UpdateEnergyPanel();
+    }
+    public void OnClickPurchaseEPS()//클릭당 돈 을 soldier 의 EPS 만큼 올림
+    {
+        if (GameManager.Instance.CurrentUser.energy < soldier.price)  //현재에너지
+        {
+            return;
+        }
+        GameManager.Instance.CurrentUser.energy -= soldier.price;
+        if (soldier.isepcUp)
+        {
+            GameManager.Instance.CurrentUser += soldier.ePs;//soldier.ePs;
+        }
+        soldier.price = (long)(soldier.price * 1.25f);
+        soldier.amount++;
+        UpdateUI();
+        GameManager.Instance.UI.UpdateEnergyPanel();
+    }
+    public void OnClickPurchaseItem()
+    {
+
+        if (GameManager.Instance.CurrentUser.energy < soldier.price)  //현재에너지
+        {
+            return;
+        }
+        GameManager.Instance.CurrentUser.energy -= soldier.price;
+        GameManager.Instance.CurrentUser.plusPercent += soldier.ePs;
+        soldier.isBuy = true;
+        soldier.amount++;
+        purchaseButton.gameObject.SetActive(false);
+        UpdateUI();
+        GameManager.Instance.UI.UpdateEnergyPanel();
+    }
+
+    public void OnClickPurchaseMusic()
+    {
+        if (soldier.soldierNumber == 0)
+        {
+            musicManger.Back();
+        }
+        if (soldier.soldierNumber == 1)
+        {
+            musicManger.Stop();
+        }
+        if (soldier.soldierNumber == 2)
+        {
+            musicManger.Play();
+        }
+        if (soldier.soldierNumber == 3)
+        {
+            musicManger.Pause();
+        }
+        if (soldier.soldierNumber == 4)
+        {
+            musicManger.Next();
+        }
+    }
+
+    public void PBD()
+    {
+        if(soldier.isBuy == true)
+        {
+            purchaseButton.gameObject.SetActive(false);
+        }
+    }
+}

@@ -1,0 +1,118 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class UIManager : MonoBehaviour
+{
+    [SerializeField]
+    private AudioSource done = null;
+    [SerializeField]
+    private Text energyText = null;
+    [SerializeField]
+    private Animator beakerAnimator = null;
+    [SerializeField]
+    private GameObject upgradePanelTemplate = null;
+    [SerializeField]
+    private GameObject upgradePanelTemplate2 = null;
+    [SerializeField]
+    private GameObject upgradePanelTemplate3 = null;
+    [SerializeField]
+    private GameObject upgradePanelTemplate4 = null;
+    [SerializeField]
+    private GameObject upgradePanelTemplate5 = null;
+    [SerializeField]
+    private EnergyText energyTextTemplate = null;
+    [SerializeField]
+    private EnergyText energyTextTemplate_Critical = null;
+    [SerializeField]
+    private Transform[] pool = null;
+
+    private List<UpgradePanel> upgradePanels = new List<UpgradePanel>();
+
+    private void Start()
+    {
+        UpdateEnergyPanel();
+        CreatePanels();
+    }
+
+
+
+    private void CreatePanels()
+    {
+        //GameObject newPanel = null;
+        //UpgradePanel newPanelComponent = null;
+
+        Aaa(GameManager.Instance.CurrentUser.soldiersList, upgradePanelTemplate);
+        Aaa(GameManager.Instance.CurrentUser.soldiersList2, upgradePanelTemplate2);
+        Aaa(GameManager.Instance.CurrentUser.soldiersList3, upgradePanelTemplate3);
+        Aaa(GameManager.Instance.CurrentUser.soldiersList4, upgradePanelTemplate4);
+        Aaa(GameManager.Instance.CurrentUser.soldiersList5, upgradePanelTemplate5);
+    }
+    private void Aaa(List<Soldier> list, GameObject panel)
+    {
+        GameObject newPanel = null;
+        UpgradePanel newPanelComponent = null;
+        foreach (Soldier soldier in list)
+        {
+            newPanel = Instantiate(panel, panel.transform.parent);
+            newPanelComponent = newPanel.GetComponent<UpgradePanel>();
+            newPanelComponent.SetValue(soldier);
+            newPanel.SetActive(true);
+            upgradePanels.Add(newPanelComponent);
+        }
+    }
+
+    public void OncliCkBeaker(int per, int dam)
+    {
+        long longplus = GameManager.Instance.CurrentUser.plusPercent;
+        float floatplus = longplus;
+        floatplus = (100 + floatplus) * 0.01f;
+        int intplus = (int)Mathf.Round(floatplus);
+
+        float floatdam  = 2 + (0.02f * dam);
+        int intdam = (int)Mathf.Round(floatdam);
+
+        int a = Random.Range(0, 1001);
+        if (a-(per+5) <= 0)
+        {
+            done.Play();
+            GameManager.Instance.CurrentUser.energy += GameManager.Instance.CurrentUser.ePc * intdam * intplus;
+            EnergyText newText = null;
+
+            if (pool[1].childCount > 0)
+            {
+                newText = pool[1].GetChild(0).GetComponent<EnergyText>();
+            }
+            else
+            {
+                newText = Instantiate(energyTextTemplate_Critical, energyTextTemplate_Critical.transform.parent);
+            }
+
+            newText.Show(Input.mousePosition, dam);
+        }
+        else
+        {
+            GameManager.Instance.CurrentUser.energy += GameManager.Instance.CurrentUser.ePc * intplus;
+            EnergyText newText = null;
+
+            if (pool[0].childCount > 0)
+            {
+                newText = pool[0].GetChild(0).GetComponent<EnergyText>();
+            }
+            else
+            {
+                newText = Instantiate(energyTextTemplate, energyTextTemplate.transform.parent);
+            }
+
+            newText.Show(Input.mousePosition, dam);
+        }
+        UpdateEnergyPanel();
+        beakerAnimator.Play("Click");
+    }
+
+    public void UpdateEnergyPanel()
+    {
+        energyText.text = string.Format("$ {0}", GameManager.Instance.CurrentUser.energy);
+    }
+}
